@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { ScrollView, View, Text, StyleSheet, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { colors, fontFamily, fontSize, spacing } from "../../src/design-system";
 import { TallyBox } from "../../src/components/TallyBox";
 import { StampTag } from "../../src/components/StampTag";
+import { EmptyState } from "../../src/components/EmptyState";
 import { requirements, type RequirementStatus } from "../../src/data/requirements";
 
 const STATUS: Record<
@@ -24,10 +26,21 @@ const STATUS: Record<
 const settledCount = 4;
 const totalCount = 8;
 
-const filters = ["All", "Action required", "In progress", "Settled"];
+type FilterKey = "ALL" | "ACTION_REQUIRED" | "IN_PROGRESS" | "COMPLETED";
+
+const FILTERS: { key: FilterKey; label: string }[] = [
+  { key: "ALL", label: "All" },
+  { key: "ACTION_REQUIRED", label: "Action required" },
+  { key: "IN_PROGRESS", label: "In progress" },
+  { key: "COMPLETED", label: "Settled" },
+];
 
 export default function RequirementsScreen() {
   const router = useRouter();
+  const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
+
+  const visible =
+    activeFilter === "ALL" ? requirements : requirements.filter((r) => r.status === activeFilter);
 
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
@@ -46,49 +59,59 @@ export default function RequirementsScreen() {
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
-          {filters.map((label, i) => (
-            <View
-              key={label}
-              style={[
-                styles.filterItem,
-                { borderBottomColor: i === 0 ? colors.ink : "transparent" },
-              ]}
-            >
-              <Text style={[styles.filterLabel, { color: i === 0 ? colors.ink : colors.inkSoft }]}>
-                {label}
-              </Text>
-            </View>
-          ))}
+          {FILTERS.map((f) => {
+            const active = f.key === activeFilter;
+            return (
+              <Pressable
+                key={f.key}
+                onPress={() => setActiveFilter(f.key)}
+                style={[
+                  styles.filterItem,
+                  { borderBottomColor: active ? colors.ink : "transparent" },
+                ]}
+              >
+                <Text style={[styles.filterLabel, { color: active ? colors.ink : colors.inkSoft }]}>
+                  {f.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </ScrollView>
       </View>
 
-      <ScrollView contentContainerStyle={styles.list}>
-        {requirements.map((r) => {
-          const s = STATUS[r.status];
-          return (
-            <Pressable
-              key={r.id}
-              style={styles.row}
-              onPress={() => router.push(`/requirements/${r.id}`)}
-            >
-              <View style={styles.rowTop}>
-                <TallyBox state={s.box} color={s.color} />
-                <View style={styles.textGroup}>
-                  <Text style={styles.reqTitle}>{r.title}</Text>
-                  <Text style={styles.reqReason}>{r.reason}</Text>
+      {visible.length === 0 ? (
+        <EmptyState title="Nothing here" description="No requirements match this filter." />
+      ) : (
+        <ScrollView contentContainerStyle={styles.list}>
+          {visible.map((r) => {
+            const s = STATUS[r.status];
+            return (
+              <Pressable
+                key={r.id}
+                style={styles.row}
+                onPress={() => router.push(`/requirements/${r.id}`)}
+              >
+                <View style={styles.rowTop}>
+                  <TallyBox state={s.box} color={s.color} />
+                  <View style={styles.textGroup}>
+                    <Text style={styles.reqTitle}>{r.title}</Text>
+                    <Text style={styles.reqReason}>{r.reason}</Text>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.rowBottom}>
-                <View style={styles.rowBaseline}>
-                  <Text style={[styles.statusLabel, { color: s.color }]}>{s.label}</Text>
-                  <Text style={styles.faintText}>{r.source}</Text>
+                <View style={styles.rowBottom}>
+                  <View style={styles.rowBaseline}>
+                    <Text style={[styles.statusLabel, { color: s.color }]}>{s.label}</Text>
+                    <Text style={styles.faintText}>{r.source}</Text>
+                  </View>
+                  {r.govService.available ? (
+                    <StampTag label="eLGU SYNCED" rotateDeg={-1.5} />
+                  ) : null}
                 </View>
-                {r.govService.available ? <StampTag label="eLGU SYNCED" rotateDeg={-1.5} /> : null}
-              </View>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -141,6 +164,8 @@ const styles = StyleSheet.create({
     marginRight: 18,
     paddingBottom: 8,
     borderBottomWidth: 2,
+    minHeight: 44,
+    justifyContent: "center",
   },
   filterLabel: {
     fontFamily: fontFamily.bold,

@@ -52,6 +52,7 @@ Rule: ink (blue-black) is the only structural color. Red is a semantic reservati
 - **Ledger alert row**: 20×20px tally box (empty = unsettled, check = settled) + title + colored subtitle (color carries meaning, paired with the box state so status is never color-only) + right-aligned source tag. Ruled bottom border, no card shell.
 - **Tab bar**: active tab marked by a 16×2px ink underline beneath the label, not a color change or pill — consistent with "status/state is never color alone."
 - Icons: inline stroke SVG only, 14–20px, 1.7–2px stroke — no emoji/dingbats, no monospace-as-costume.
+- **LoadingState / EmptyState / ErrorState** (`src/components/`): the MOBILE_UI.md §10/§15 shared states. `EmptyState` is a ruled-off page (short ink rule + title + optional description/action), not a card or illustration. `ErrorState` is the one other place red is earned besides urgent ledger entries. `LoadingState` is a plain centered spinner + label. `EmptyState` is genuinely wired into Requirements (filter yields zero — not reachable with today's 4-item placeholder data, but the path is real) and Assistant (before the first question is asked — reachable today). `LoadingState`/`ErrorState` are built and tested but **not yet wired anywhere** — there's no real async data source yet to honestly trigger them; wiring them to a fake timer would be dishonest scaffolding, not a feature.
 
 ## Superseded
 

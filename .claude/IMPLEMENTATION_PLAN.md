@@ -15,7 +15,9 @@ Deliver:
 - TypeScript — done (`apps/mobile/tsconfig.json`, root `pnpm typecheck`)
 - CI checks — done (`.github/workflows/ci.yml`: format check, lint, typecheck, and test on push/PR to `main`)
 
-Phase 0 is complete. Committed and pushed to https://github.com/argylleee/NegoSure. Test infrastructure (Jest + `jest-expo` + React Native Testing Library, RNTL v14's `userEvent` API) is set up with real coverage: `authStore`, `onboardingStore`, and `extractBusinessFacts` unit tests, a `TallyBox` component test, and a critical-screen test for sign-in (validation errors + successful sign-in/navigation). Coverage is still thin — most screens and stores have no tests yet.
+Phase 0 is complete. Committed and pushed to https://github.com/argylleee/NegoSure. Test infrastructure (Jest + `jest-expo` + React Native Testing Library, RNTL v14's `userEvent` API) is set up with real coverage: `authStore`, `onboardingStore`, and `extractBusinessFacts` unit tests; `TallyBox`, `LoadingState`, `EmptyState`, `ErrorState` component tests; and critical-screen tests for sign-in (validation errors + successful sign-in/navigation) and Assistant (empty-state → ask → answer-contract). 31 tests total. Coverage is still thin — most screens and stores have no tests yet.
+
+Shared states from `MOBILE_UI.md` §10/§15 (`LoadingState`/`EmptyState`/`ErrorState`) are built and documented in `DESIGN.md`. `EmptyState` is genuinely wired into Requirements (filter-yields-zero) and Assistant (before first question). `LoadingState`/`ErrorState` exist and are tested but have nothing real to attach to yet — no screen has an async data source. Requirements' filter chips were also fixed from dead UI (visual only, no `onPress`) to actually filtering the list.
 
 ## Phase 1 — Design System + Direct Mocks
 

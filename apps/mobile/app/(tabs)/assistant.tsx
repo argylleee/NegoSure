@@ -11,21 +11,34 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, fontFamily, fontSize, spacing } from "../../src/design-system";
+import { EmptyState } from "../../src/components/EmptyState";
 
 type Confidence = "High" | "Medium" | "Low";
+
+type Answer = {
+  question: string;
+  answer: string;
+  confidence: Confidence;
+  sources: string[];
+  warning: string;
+};
 
 // Placeholder — replace with the AI orchestration service (AIService, per
 // .claude/CLAUDE.md §10). Never render a fabricated answer here; this
 // shape (answer + sources + confidence) is the contract every real answer
-// must satisfy, not sample copy to keep.
-const sampleAnswer = {
-  question: "Do I need a Fire Safety Inspection Certificate?",
-  answer:
-    "Based on the official sources retrieved for your business location, this requirement appears applicable because your business prepares food on-site.",
-  confidence: "High" as Confidence,
-  sources: ["Bureau of Fire Protection — Fire Code IRR", "LGU Dasmariñas ordinance"],
-  warning: "Verify with BFP before your inspection date — requirements can change by locality.",
-};
+// must satisfy, not sample copy to keep. The canned response below is
+// returned regardless of what's asked — it exists to prove out the
+// required UI contract, not to answer anything.
+function askPlaceholder(question: string): Answer {
+  return {
+    question,
+    answer:
+      "Based on the official sources retrieved for your business location, this requirement appears applicable because your business prepares food on-site.",
+    confidence: "High",
+    sources: ["Bureau of Fire Protection — Fire Code IRR", "LGU Dasmariñas ordinance"],
+    warning: "Verify with BFP before your inspection date — requirements can change by locality.",
+  };
+}
 
 const CONFIDENCE_COLOR: Record<Confidence, string> = {
   High: colors.stamp,
@@ -35,6 +48,14 @@ const CONFIDENCE_COLOR: Record<Confidence, string> = {
 
 export default function AssistantScreen() {
   const [draft, setDraft] = useState("");
+  const [answer, setAnswer] = useState<Answer | null>(null);
+
+  const onAsk = () => {
+    const question = draft.trim();
+    if (!question) return;
+    setAnswer(askPlaceholder(question));
+    setDraft("");
+  };
 
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
@@ -46,50 +67,55 @@ export default function AssistantScreen() {
           <Text style={styles.title}>Assistant</Text>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scroll}>
-          <View style={styles.questionRow}>
-            <Text style={styles.questionText}>{sampleAnswer.question}</Text>
-          </View>
-
-          <View style={styles.answerBlock}>
-            <Text style={styles.answerText}>{sampleAnswer.answer}</Text>
-
-            <View style={styles.rowBaseline}>
-              <Text style={styles.softLabel}>Confidence</Text>
-              <Text
-                style={[
-                  styles.confidenceValue,
-                  { color: CONFIDENCE_COLOR[sampleAnswer.confidence] },
-                ]}
-              >
-                {sampleAnswer.confidence}
-              </Text>
+        {answer === null ? (
+          <EmptyState
+            title="Ask your first question"
+            description="Grounded in official sources — with a confidence level and citations every time."
+          />
+        ) : (
+          <ScrollView contentContainerStyle={styles.scroll}>
+            <View style={styles.questionRow}>
+              <Text style={styles.questionText}>{answer.question}</Text>
             </View>
 
-            <View style={styles.sourcesGroup}>
-              <Text style={styles.softLabel}>Sources</Text>
-              {sampleAnswer.sources.map((s) => (
-                <Text key={s} style={styles.sourceItem}>
-                  · {s}
+            <View style={styles.answerBlock}>
+              <Text style={styles.answerText}>{answer.answer}</Text>
+
+              <View style={styles.rowBaseline}>
+                <Text style={styles.softLabel}>Confidence</Text>
+                <Text
+                  style={[styles.confidenceValue, { color: CONFIDENCE_COLOR[answer.confidence] }]}
+                >
+                  {answer.confidence}
                 </Text>
-              ))}
-            </View>
+              </View>
 
-            <View style={styles.warningRow}>
-              <Text style={styles.warningText}>{sampleAnswer.warning}</Text>
+              <View style={styles.sourcesGroup}>
+                <Text style={styles.softLabel}>Sources</Text>
+                {answer.sources.map((s) => (
+                  <Text key={s} style={styles.sourceItem}>
+                    · {s}
+                  </Text>
+                ))}
+              </View>
+
+              <View style={styles.warningRow}>
+                <Text style={styles.warningText}>{answer.warning}</Text>
+              </View>
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        )}
 
         <View style={styles.inputBar}>
           <TextInput
+            testID="assistant-input"
             value={draft}
             onChangeText={setDraft}
             placeholder="Ask about a requirement..."
             placeholderTextColor={colors.inkFaint}
             style={styles.input}
           />
-          <Pressable style={styles.sendButton}>
+          <Pressable testID="assistant-ask" style={styles.sendButton} onPress={onAsk}>
             <Text style={styles.sendLabel}>Ask</Text>
           </Pressable>
         </View>
