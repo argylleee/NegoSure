@@ -13,9 +13,9 @@ Deliver:
 - linting — done (`expo lint` / `eslint-config-expo` in `apps/mobile`, root `pnpm lint`)
 - formatting — done (Prettier at the root, `.prettierrc.json` / `.prettierignore`, root `pnpm format` / `format:check`)
 - TypeScript — done (`apps/mobile/tsconfig.json`, root `pnpm typecheck`)
-- CI checks — done (`.github/workflows/ci.yml`: format check, lint, typecheck on push/PR to `main`; no test step yet — no tests exist)
+- CI checks — done (`.github/workflows/ci.yml`: format check, lint, typecheck, and test on push/PR to `main`)
 
-Phase 0 is now complete except that no commit/remote exists yet, and there is still no test suite for CI to run.
+Phase 0 is complete. Committed and pushed to https://github.com/argylleee/NegoSure. Test infrastructure (Jest + `jest-expo` + React Native Testing Library, RNTL v14's `userEvent` API) is set up with real coverage: `authStore`, `onboardingStore`, and `extractBusinessFacts` unit tests, a `TallyBox` component test, and a critical-screen test for sign-in (validation errors + successful sign-in/navigation). Coverage is still thin — most screens and stores have no tests yet.
 
 ## Phase 1 — Design System + Direct Mocks
 

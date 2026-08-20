@@ -50,6 +50,7 @@ export default function SignInScreen() {
               name="email"
               render={({ field: { onChange, onBlur, value } }) => (
                 <LedgerInput
+                  testID="email-input"
                   label="Email"
                   value={value}
                   onChangeText={onChange}
@@ -65,6 +66,7 @@ export default function SignInScreen() {
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
                 <LedgerInput
+                  testID="password-input"
                   label="Password"
                   value={value}
                   onChangeText={onChange}
@@ -77,6 +79,7 @@ export default function SignInScreen() {
           </View>
 
           <Pressable
+            testID="sign-in-submit"
             style={styles.primaryButton}
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}

@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "pnpm --filter mobile lint",
-    "typecheck": "pnpm --filter mobile exec tsc --noEmit"
+    "typecheck": "pnpm --filter mobile exec tsc --noEmit",
+    "test": "pnpm --filter mobile test"
   },
   "devDependencies": {
     "prettier": "^3.9.6"

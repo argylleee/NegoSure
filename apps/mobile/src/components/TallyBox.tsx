@@ -15,11 +15,13 @@ type TallyBoxProps = {
 // text status label at the call site. See /DESIGN.md.
 export function TallyBox({ state, color = colors.ink }: TallyBoxProps) {
   return (
-    <View style={[styles.box, { borderColor: color }]}>
+    <View testID="tally-box" style={[styles.box, { borderColor: color }]}>
       {state === "checked" ? (
-        <CheckArrowIcon color={color} size={12} />
+        <View testID="tally-box-check">
+          <CheckArrowIcon color={color} size={12} />
+        </View>
       ) : state === "dotted" ? (
-        <View style={[styles.dot, { backgroundColor: color }]} />
+        <View testID="tally-box-dot" style={[styles.dot, { backgroundColor: color }]} />
       ) : null}
     </View>
   );
