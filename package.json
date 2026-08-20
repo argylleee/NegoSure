@@ -1,0 +1,18 @@
+{
+  "name": "negosure",
+  "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "pnpm --filter mobile lint",
+    "typecheck": "pnpm --filter mobile exec tsc --noEmit"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6"
+  }
+}

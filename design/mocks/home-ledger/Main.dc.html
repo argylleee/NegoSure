@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!--
+THESIS: The compliance dashboard reads like the listahan ledger every
+sari-sari owner already keeps, refusing the generic progress-bar SaaS
+dashboard.
+OWN-WORLD: Warm paper-gray ground, thin school-notebook rule lines, one
+ballpen ink-blue-black accent, red ink reserved for unsettled/urgent
+entries only, a muted violet stamp ink for verified/official marks,
+Schibsted Grotesk for structure and tabular numerals.
+STORY: Owner opens Home, sees their business as a ledger page,
+requirements as ruled rows to check off, red-ink entries as what still
+needs settling -- recognized instantly as "my listahan," not a
+corporate app.
+FIRST VIEWPORT: Home screen -- ledger header (business name on a ruled
+line), a double-underlined "balance" total summarizing compliance
+progress, ruled alert rows with a tally-box column, quick actions as a
+row of stamped rectangles.
+FORM: Sari-sari ledger world, candidate 1 of 7 (Impeccable's pick, not
+the dice assignment), seed key ecf3dae7.
+FINISH: unreviewed and undocumented is unfinished; this build ends
+with the finish review, the verdict, DESIGN.md, and every shipping
+raster carrying its provenance.
+-->
+<helmet>
+  <style>
+    :root{
+      --paper: oklch(97% 0.008 85);
+      --paper-raised: oklch(99% 0.004 85);
+      --line: oklch(85% 0.02 250);
+      --line-strong: oklch(72% 0.03 250);
+      --ink: oklch(28% 0.045 255);
+      --ink-soft: oklch(46% 0.03 255);
+      --ink-faint: oklch(58% 0.025 255);
+      --red: oklch(46% 0.17 25);
+      --red-soft: oklch(94% 0.03 25);
+      --stamp: oklch(38% 0.09 292);
+      --stamp-soft: oklch(94% 0.025 292);
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:"Schibsted Grotesk", system-ui, sans-serif;background:#0b0c0c;}
+    .num{font-variant-numeric:tabular-nums;}
+    .screen{
+      width:390px;height:844px;background:var(--paper);position:relative;
+      display:flex;flex-direction:column;overflow:hidden;
+      box-shadow:0 40px 80px -30px rgba(0,0,0,0.55);
+    }
+    .scroll{flex:1;overflow-y:auto;}
+    .scroll::-webkit-scrollbar{display:none;}
+    .row{border-bottom:1px solid var(--line);}
+  </style>
+</helmet>
+
+<div class="screen">
+
+  <div class="scroll">
+    <div style="padding:24px 22px 8px;display:flex;flex-direction:column;gap:22px;">
+
+      <!-- Greeting -->
+      <div style="display:flex;align-items:baseline;justify-content:space-between;">
+        <span style="font-size:13px;color:var(--ink-faint);font-weight:500;">{{greeting}}</span>
+        <span style="font-size:11px;color:var(--ink-faint);font-weight:500;">{{dateLabel}}</span>
+      </div>
+
+      <!-- Ledger header: business name on a ruled line -->
+      <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:8px;">
+        <span style="font-size:21px;color:var(--ink);font-weight:700;">{{businessName}}</span>
+        <span style="font-size:12px;color:var(--ink-soft);font-weight:500;">{{businessLocation}}</span>
+      </div>
+
+      <!-- Balance total -->
+      <div style="display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;padding:2px 0 10px;">
+          <span style="font-size:13px;color:var(--ink-soft);font-weight:500;">Compliance balance</span>
+          <div style="display:flex;align-items:baseline;gap:4px;">
+            <span class="num" style="font-size:26px;color:var(--ink);font-weight:700;">{{progressPct}}</span>
+            <span style="font-size:13px;color:var(--ink-soft);font-weight:600;">% settled</span>
+          </div>
+        </div>
+        <div style="border-bottom:1px solid var(--line-strong);"></div>
+        <div style="border-bottom:2.5px solid var(--ink);margin-top:2px;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:6px;">
+          <span style="font-size:11px;color:var(--ink-faint);font-weight:500;">{{settledCount}} of {{totalCount}} requirements settled</span>
+          <div style="display:flex;align-items:center;gap:4px;padding:3px 9px;border-radius:3px;background:var(--stamp-soft);transform:rotate(-2deg);">
+            <span style="font-size:10px;color:var(--stamp);font-weight:700;letter-spacing:0.03em;">ON TRACK</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Needs attention: ruled ledger rows -->
+    <div style="padding:6px 22px 4px;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:8px 0 6px;">
+        <span style="font-size:13px;color:var(--ink);font-weight:700;">Needs attention</span>
+        <span style="font-size:11px;color:var(--ink-soft);font-weight:600;">View all</span>
+      </div>
+
+      <sc-for list="{{alerts}}" as="item" hint-placeholder-count="2">
+        <div class="row" style="display:flex;align-items:center;gap:12px;padding:12px 0;">
+          <div style="width:20px;height:20px;border:1.6px solid {{item.markColor}};border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+            <sc-if value="{{item.settled}}" hint-placeholder-val="false">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="{{item.markColor}}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;">
+            <span style="font-size:13.5px;color:var(--ink);font-weight:600;line-height:1.3;">{{item.title}}</span>
+            <span style="font-size:11.5px;color:{{item.markColor}};font-weight:600;">{{item.subtitle}}</span>
+          </div>
+          <span style="font-size:11px;color:var(--ink-faint);font-weight:500;white-space:nowrap;">{{item.source}}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- Quick actions: a ruled row of stamp-tags, not a card grid -->
+    <div style="padding:16px 22px 26px;display:flex;flex-direction:column;gap:12px;">
+      <span style="font-size:13px;color:var(--ink);font-weight:700;">Quick actions</span>
+      <div style="display:flex;flex-wrap:wrap;gap:10px 12px;">
+
+        <div style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px 0 9px;border:1.4px solid var(--ink);border-radius:3px;transform:rotate(-1.2deg);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V6a1 1 0 0 1 1-1h3M21 9V6a1 1 0 0 0-1-1h-3M3 15v3a1 1 0 0 0 1 1h3M21 15v3a1 1 0 0 1-1 1h-3"/><rect x="8" y="9" width="8" height="6" rx="1"/></svg>
+          <span style="font-size:11.5px;color:var(--ink);font-weight:700;letter-spacing:0.01em;">Scan document</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px 0 9px;border:1.4px solid var(--ink);border-radius:3px;transform:rotate(0.8deg);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span style="font-size:11.5px;color:var(--ink);font-weight:700;letter-spacing:0.01em;">Requirements</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px 0 9px;border:1.4px solid var(--ink);border-radius:3px;transform:rotate(-0.6deg);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M2.5 9h19M2.5 15h19M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+          <span style="font-size:11.5px;color:var(--ink);font-weight:700;letter-spacing:0.01em;">Gov't services</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px 0 9px;border:1.4px solid var(--ink);border-radius:3px;transform:rotate(1.4deg);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <span style="font-size:11.5px;color:var(--ink);font-weight:700;letter-spacing:0.01em;">Ask NegoSure</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom tab bar: active tab underlined, not colored -->
+  <div style="display:flex;align-items:center;justify-content:space-around;padding:12px 8px calc(8px + 18px);background:var(--paper-raised);border-top:1.5px solid var(--ink);flex-shrink:0;">
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+      <span style="font-size:10px;color:var(--ink);font-weight:700;">Home</span>
+      <div style="width:16px;height:2px;background:var(--ink);border-radius:2px;"></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5 11 13.5 15.5 9"/><rect x="4" y="4" width="16" height="16" rx="3"/></svg>
+      <span style="font-size:10px;color:var(--ink-faint);font-weight:600;">Requirements</span>
+      <div style="width:16px;height:2px;background:transparent;"></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      <span style="font-size:10px;color:var(--ink-faint);font-weight:600;">Documents</span>
+      <div style="width:16px;height:2px;background:transparent;"></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <span style="font-size:10px;color:var(--ink-faint);font-weight:600;">Assistant</span>
+      <div style="width:16px;height:2px;background:transparent;"></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg>
+      <span style="font-size:10px;color:var(--ink-faint);font-weight:600;">Profile</span>
+      <div style="width:16px;height:2px;background:transparent;"></div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{
+  "businessName": {"editor": "text", "default": "Juan'\''s Coffee Shop"},
+  "businessLocation": {"editor": "text", "default": "Dasmariñas, Cavite"},
+  "progressPct": {"editor": "range", "default": 80, "min": 0, "max": 100, "step": 5}
+}'>
+class Component extends DCLogic {
+  renderVals() {
+    const now = new Date();
+    const hour = now.getHours ? now.getHours() : 9;
+    const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    return {
+      greeting,
+      dateLabel: 'Aug 20',
+      businessName: this.props.businessName ?? "Juan's Coffee Shop",
+      businessLocation: this.props.businessLocation ?? 'Dasmariñas, Cavite',
+      progressPct: this.props.progressPct ?? 80,
+      settledCount: 4,
+      totalCount: 5,
+      alerts: [
+        { title: 'Fire Safety Certificate', subtitle: 'Expires in 12 days', source: 'BFP', settled: false, markColor: 'var(--red)' },
+        { title: 'Business Permit Renewal', subtitle: 'Awaiting LGU review', source: 'LGU', settled: false, markColor: 'var(--red)' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

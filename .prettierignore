@@ -1,0 +1,14 @@
+node_modules
+.expo
+dist
+web-build
+pnpm-lock.yaml
+apps/mobile/ios
+apps/mobile/android
+design/mocks/**/*.html
+
+# Vendored/third-party — not our code
+.claude/skills
+
+# Generated caches
+**/.impeccable
