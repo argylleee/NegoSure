@@ -1,5 +1,5 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
-import AssistantScreen from "./assistant";
+import AssistantScreen from "../../app/(tabs)/assistant";
 
 describe("AssistantScreen", () => {
   it("shows the empty state before anything is asked", async () => {

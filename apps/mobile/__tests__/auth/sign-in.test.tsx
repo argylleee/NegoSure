@@ -1,5 +1,5 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
-import SignInScreen from "./sign-in";
+import SignInScreen from "../../app/(auth)/sign-in";
 import { useAuthStore } from "../../src/store/authStore";
 
 const mockReplace = jest.fn();
