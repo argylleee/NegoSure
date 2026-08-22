@@ -9,9 +9,9 @@
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "pnpm --filter mobile lint",
-    "typecheck": "pnpm --filter mobile exec tsc --noEmit",
-    "test": "pnpm --filter mobile test"
+    "lint": "pnpm -r --if-present lint",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test"
   },
   "devDependencies": {
     "prettier": "^3.9.6"

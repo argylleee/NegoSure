@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { View, Text, StyleSheet, Pressable, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -6,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { colors, fontFamily, fontSize, spacing } from "../../src/design-system";
 import { LedgerInput } from "../../src/components/LedgerInput";
-import { useAuthStore } from "../../src/store/authStore";
+import { supabase } from "../../src/lib/supabase";
 
 const schema = z
   .object({
@@ -24,7 +25,7 @@ type FormValues = z.infer<typeof schema>;
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const signIn = useAuthStore((s) => s.signIn);
+  const [authError, setAuthError] = useState<string | undefined>();
   const {
     control,
     handleSubmit,
@@ -34,10 +35,19 @@ export default function SignUpScreen() {
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   });
 
-  // Placeholder — replace with Supabase Auth. Business creation and
-  // onboarding happen after a real account exists, not before.
-  const onSubmit = (values: FormValues) => {
-    signIn({ name: values.name, email: values.email });
+  // authStore updates from Supabase's onAuthStateChange listener. Business
+  // creation and onboarding happen after this real account exists.
+  const onSubmit = async (values: FormValues) => {
+    setAuthError(undefined);
+    const { error } = await supabase.auth.signUp({
+      email: values.email,
+      password: values.password,
+      options: { data: { full_name: values.name } },
+    });
+    if (error) {
+      setAuthError(error.message);
+      return;
+    }
     router.replace("/(onboarding)/describe");
   };
 
@@ -110,6 +120,8 @@ export default function SignUpScreen() {
             />
           </View>
 
+          {authError ? <Text style={styles.authError}>{authError}</Text> : null}
+
           <Pressable
             style={styles.primaryButton}
             accessibilityRole="button"
@@ -161,6 +173,12 @@ const styles = StyleSheet.create({
   },
   form: {
     gap: 20,
+  },
+  authError: {
+    fontFamily: fontFamily.medium,
+    fontSize: fontSize.md,
+    color: colors.red,
+    marginTop: -8,
   },
   primaryButton: {
     minHeight: 52,

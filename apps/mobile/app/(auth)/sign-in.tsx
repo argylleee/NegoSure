@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { View, Text, StyleSheet, Pressable, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -6,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { colors, fontFamily, fontSize, spacing } from "../../src/design-system";
 import { LedgerInput } from "../../src/components/LedgerInput";
-import { useAuthStore } from "../../src/store/authStore";
+import { supabase } from "../../src/lib/supabase";
 
 const schema = z.object({
   email: z.string().min(1, "Email is required").email("Enter a valid email"),
@@ -17,7 +18,7 @@ type FormValues = z.infer<typeof schema>;
 
 export default function SignInScreen() {
   const router = useRouter();
-  const signIn = useAuthStore((s) => s.signIn);
+  const [authError, setAuthError] = useState<string | undefined>();
   const {
     control,
     handleSubmit,
@@ -27,10 +28,18 @@ export default function SignInScreen() {
     defaultValues: { email: "", password: "" },
   });
 
-  // Placeholder — replace with Supabase Auth. Never treat a client-side
-  // form submit as a real session; the backend must issue and verify it.
-  const onSubmit = (values: FormValues) => {
-    signIn({ name: "Juan Dela Cruz", email: values.email });
+  // authStore updates from Supabase's onAuthStateChange listener; the root
+  // layout's gate reacts to that and routes into (tabs) on its own.
+  const onSubmit = async (values: FormValues) => {
+    setAuthError(undefined);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
+    });
+    if (error) {
+      setAuthError(error.message);
+      return;
+    }
     router.replace("/(tabs)");
   };
 
@@ -78,6 +87,8 @@ export default function SignInScreen() {
             />
           </View>
 
+          {authError ? <Text style={styles.authError}>{authError}</Text> : null}
+
           <Pressable
             testID="sign-in-submit"
             style={styles.primaryButton}
@@ -88,6 +99,14 @@ export default function SignInScreen() {
             disabled={isSubmitting}
           >
             <Text style={styles.primaryLabel}>Sign in</Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Forgot password?"
+            onPress={() => router.push("/(auth)/forgot-password")}
+          >
+            <Text style={styles.link}>Forgot password?</Text>
           </Pressable>
 
           <Pressable
@@ -130,6 +149,12 @@ const styles = StyleSheet.create({
   },
   form: {
     gap: 20,
+  },
+  authError: {
+    fontFamily: fontFamily.medium,
+    fontSize: fontSize.md,
+    color: colors.red,
+    marginTop: -8,
   },
   primaryButton: {
     minHeight: 52,

@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { colors, fontFamily, fontSize, spacing } from "../../src/design-system";
 import { useAuthStore } from "../../src/store/authStore";
+import { supabase } from "../../src/lib/supabase";
 
 // Placeholder — business profile has no service yet (onboarding isn't
 // built). User identity now comes from the real (in-memory) auth store.
@@ -17,7 +18,6 @@ const settingsGroups: { title: string; items: string[] }[] = [
 export default function ProfileScreen() {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
-  const signOut = useAuthStore((s) => s.signOut);
 
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
@@ -57,8 +57,8 @@ export default function ProfileScreen() {
           style={styles.signOut}
           accessibilityRole="button"
           accessibilityLabel="Sign out"
-          onPress={() => {
-            signOut();
+          onPress={async () => {
+            await supabase.auth.signOut();
             router.replace("/(auth)/welcome");
           }}
         >

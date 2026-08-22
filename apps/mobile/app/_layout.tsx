@@ -14,22 +14,24 @@ import {
 import { queryClient } from "../src/lib/queryClient";
 import { useAuthStore } from "../src/store/authStore";
 import { useOnboardingStore } from "../src/store/onboardingStore";
+import { LoadingState } from "../src/components/LoadingState";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
-// Placeholder client-side gate — no real session to verify yet. Once a
-// backend exists, route protection must happen there too; this only
-// prevents an unauthenticated or not-yet-onboarded user from seeing the
-// tabs UI in dev. Priority: unauthenticated -> (auth); authenticated but
-// not onboarded -> (onboarding); otherwise -> (tabs).
+// Client-side route gate. Session state comes from Supabase Auth via
+// authStore (server remains authoritative — see .claude/CLAUDE.md §13);
+// this only decides which screen group to show. Priority: session
+// restoring -> hold; unauthenticated -> (auth); authenticated but not
+// onboarded -> (onboarding); otherwise -> (tabs).
 function useAuthGate(ready: boolean) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isInitializing = useAuthStore((s) => s.isInitializing);
   const hasOnboarded = useOnboardingStore((s) => s.hasOnboarded);
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || isInitializing) return;
     const inAuthGroup = segments[0] === "(auth)";
     const inOnboardingGroup = segments[0] === "(onboarding)";
 
@@ -40,7 +42,9 @@ function useAuthGate(ready: boolean) {
     } else if (inAuthGroup || inOnboardingGroup) {
       router.replace("/(tabs)");
     }
-  }, [ready, isAuthenticated, hasOnboarded, segments, router]);
+  }, [ready, isInitializing, isAuthenticated, hasOnboarded, segments, router]);
+
+  return isInitializing;
 }
 
 export default function RootLayout() {
@@ -50,8 +54,11 @@ export default function RootLayout() {
     SchibstedGrotesk_600SemiBold,
     SchibstedGrotesk_700Bold,
   });
+  const initialize = useAuthStore((s) => s.initialize);
 
-  useAuthGate(fontsLoaded);
+  useEffect(() => initialize(), [initialize]);
+
+  const isInitializing = useAuthGate(fontsLoaded);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -67,7 +74,11 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false }} />
+        {isInitializing ? (
+          <LoadingState label="Restoring your session" />
+        ) : (
+          <Stack screenOptions={{ headerShown: false }} />
+        )}
       </QueryClientProvider>
     </SafeAreaProvider>
   );

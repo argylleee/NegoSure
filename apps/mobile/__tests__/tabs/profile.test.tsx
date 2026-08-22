@@ -1,6 +1,7 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
 import ProfileScreen from "../../app/(tabs)/profile";
 import { useAuthStore } from "../../src/store/authStore";
+import { supabase } from "../../src/lib/supabase";
 
 const mockReplace = jest.fn();
 
@@ -8,9 +9,20 @@ jest.mock("expo-router", () => ({
   useRouter: () => ({ replace: mockReplace, push: jest.fn() }),
 }));
 
+jest.mock("../../src/lib/supabase", () => ({
+  supabase: {
+    auth: {
+      signOut: jest.fn(),
+    },
+  },
+}));
+
+const mockSignOut = supabase.auth.signOut as jest.Mock;
+
 describe("ProfileScreen", () => {
   beforeEach(() => {
     mockReplace.mockClear();
+    mockSignOut.mockReset().mockResolvedValue({ error: null });
     useAuthStore.setState({ isAuthenticated: false, user: null });
   });
 
@@ -41,7 +53,7 @@ describe("ProfileScreen", () => {
     expect(screen.getByText("About NegoSure")).toBeTruthy();
   });
 
-  it("signs out and navigates to Welcome when Sign out is pressed", async () => {
+  it("signs out via Supabase and navigates to Welcome when Sign out is pressed", async () => {
     useAuthStore.setState({
       isAuthenticated: true,
       user: { name: "Juan Dela Cruz", email: "juan@example.com" },
@@ -51,8 +63,7 @@ describe("ProfileScreen", () => {
 
     await user.press(screen.getByText("Sign out"));
 
-    expect(useAuthStore.getState().isAuthenticated).toBe(false);
-    expect(useAuthStore.getState().user).toBeNull();
+    expect(mockSignOut).toHaveBeenCalledTimes(1);
     expect(mockReplace).toHaveBeenCalledWith("/(auth)/welcome");
   });
 });
