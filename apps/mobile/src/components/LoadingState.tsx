@@ -9,7 +9,14 @@ type LoadingStateProps = {
 // screen must show this instead of a blank area while data is in flight.
 export function LoadingState({ label = "Loading" }: LoadingStateProps) {
   return (
-    <View testID="loading-state" style={styles.container}>
+    <View
+      testID="loading-state"
+      style={styles.container}
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={label}
+      accessibilityState={{ busy: true }}
+    >
       <ActivityIndicator color={colors.ink} />
       <Text style={styles.label}>{label}</Text>
     </View>

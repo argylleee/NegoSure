@@ -14,6 +14,7 @@ export function LedgerInput({ label, error, style, ...props }: LedgerInputProps)
     <View style={styles.group}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
+        accessibilityLabel={error ? `${label}, ${error}` : label}
         style={[styles.input, error ? styles.inputError : null, style]}
         placeholderTextColor={colors.inkFaint}
         {...props}

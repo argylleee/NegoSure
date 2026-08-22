@@ -85,6 +85,8 @@ export default function RequirementDetailScreen() {
         {application ? (
           <Pressable
             style={styles.trackButton}
+            accessibilityRole="button"
+            accessibilityLabel="Track application"
             onPress={() => router.push(`/applications/${requirement.id}`)}
           >
             <Text style={styles.trackLabel}>Track application</Text>
@@ -97,7 +99,12 @@ export default function RequirementDetailScreen() {
 
 function BackButton({ onPress }: { onPress: () => void }) {
   return (
-    <Pressable style={styles.backButton} onPress={onPress}>
+    <Pressable
+      style={styles.backButton}
+      accessibilityRole="button"
+      accessibilityLabel="Back"
+      onPress={onPress}
+    >
       <Text style={styles.backLabel}>‹ Back</Text>
     </Pressable>
   );

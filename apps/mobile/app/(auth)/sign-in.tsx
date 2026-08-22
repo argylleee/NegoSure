@@ -81,13 +81,20 @@ export default function SignInScreen() {
           <Pressable
             testID="sign-in-submit"
             style={styles.primaryButton}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in"
+            accessibilityState={{ disabled: isSubmitting }}
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
           >
             <Text style={styles.primaryLabel}>Sign in</Text>
           </Pressable>
 
-          <Pressable onPress={() => router.push("/(auth)/sign-up")}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Don't have an account? Get started"
+            onPress={() => router.push("/(auth)/sign-up")}
+          >
             <Text style={styles.link}>Don&apos;t have an account? Get started</Text>
           </Pressable>
         </View>

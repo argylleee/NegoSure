@@ -15,7 +15,12 @@ export default function ApplicationTrackingScreen() {
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
       <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
+        <Pressable
+          style={styles.backButton}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          onPress={() => router.back()}
+        >
           <Text style={styles.backLabel}>‹ Back</Text>
         </Pressable>
       </View>
@@ -33,7 +38,12 @@ export default function ApplicationTrackingScreen() {
 
           <View style={styles.timeline}>
             {application.events.map((event, i) => (
-              <View key={event.label} style={styles.eventRow}>
+              <View
+                key={event.label}
+                style={styles.eventRow}
+                accessible
+                accessibilityLabel={`${event.label}, ${event.done ? "completed" : "pending"}, ${event.dateLabel}`}
+              >
                 <View style={styles.markerColumn}>
                   <TallyBox
                     state={event.done ? "checked" : "empty"}

@@ -48,6 +48,8 @@ export default function SummaryScreen() {
       <View style={styles.footer}>
         <Pressable
           style={styles.primaryButton}
+          accessibilityRole="button"
+          accessibilityLabel="Enter NegoSure"
           onPress={() => {
             complete();
             router.replace("/(tabs)");

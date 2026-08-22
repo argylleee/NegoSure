@@ -20,10 +20,20 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.actions}>
-          <Pressable style={styles.primaryButton} onPress={() => router.push("/(auth)/sign-up")}>
+          <Pressable
+            style={styles.primaryButton}
+            accessibilityRole="button"
+            accessibilityLabel="Get started"
+            onPress={() => router.push("/(auth)/sign-up")}
+          >
             <Text style={styles.primaryLabel}>Get started</Text>
           </Pressable>
-          <Pressable style={styles.secondaryButton} onPress={() => router.push("/(auth)/sign-in")}>
+          <Pressable
+            style={styles.secondaryButton}
+            accessibilityRole="button"
+            accessibilityLabel="I already have an account"
+            onPress={() => router.push("/(auth)/sign-in")}
+          >
             <Text style={styles.secondaryLabel}>I already have an account</Text>
           </Pressable>
           <Text style={styles.disclaimer}>

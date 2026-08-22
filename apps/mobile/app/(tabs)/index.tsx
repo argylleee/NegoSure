@@ -34,15 +34,38 @@ function greeting() {
   return "Good evening";
 }
 
-const quickActions = [
-  { label: "Scan document", Icon: ScanIcon, rotate: -1.2 },
-  { label: "Requirements", Icon: RequirementsIcon, rotate: 0.8 },
-  { label: "Gov't services", Icon: GovIcon, rotate: -0.6 },
-  { label: "Ask NegoSure", Icon: AssistantIcon, rotate: 1.4 },
-];
-
 export default function HomeScreen() {
   const router = useRouter();
+
+  // Quick actions route into the closest existing screen — there's no
+  // dedicated scan flow or government-service catalog screen yet
+  // (gov-service info lives per-requirement, see app/requirements/[id]).
+  const quickActions = [
+    {
+      label: "Scan document",
+      Icon: ScanIcon,
+      rotate: -1.2,
+      onPress: () => router.push("/(tabs)/documents"),
+    },
+    {
+      label: "Requirements",
+      Icon: RequirementsIcon,
+      rotate: 0.8,
+      onPress: () => router.push("/(tabs)/requirements"),
+    },
+    {
+      label: "Gov't services",
+      Icon: GovIcon,
+      rotate: -0.6,
+      onPress: () => router.push("/(tabs)/requirements"),
+    },
+    {
+      label: "Ask NegoSure",
+      Icon: AssistantIcon,
+      rotate: 1.4,
+      onPress: () => router.push("/(tabs)/assistant"),
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
@@ -57,7 +80,10 @@ export default function HomeScreen() {
             <Text style={styles.metaText}>{business.location}</Text>
           </View>
 
-          <View>
+          <View
+            accessible
+            accessibilityLabel={`Compliance balance ${progressPct} percent settled. ${settledCount} of ${totalCount} requirements settled. On track.`}
+          >
             <View style={[styles.rowBetween, { paddingBottom: 10 }]}>
               <Text style={styles.softLabel}>Compliance balance</Text>
               <View style={styles.rowBaseline}>
@@ -81,7 +107,11 @@ export default function HomeScreen() {
             style={[styles.rowBaseline, { justifyContent: "space-between", paddingVertical: 6 }]}
           >
             <Text style={styles.sectionTitle}>Needs attention</Text>
-            <Pressable onPress={() => router.push("/(tabs)/requirements")}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="View all requirements"
+              onPress={() => router.push("/(tabs)/requirements")}
+            >
               <Text style={styles.softLabelBold}>View all</Text>
             </Pressable>
           </View>
@@ -90,10 +120,12 @@ export default function HomeScreen() {
             <Pressable
               key={item.id}
               style={styles.alertRow}
+              accessibilityRole="button"
+              accessibilityLabel={`${item.title}, action required: ${item.subtitle}, source ${item.source}`}
               onPress={() => router.push(`/requirements/${item.id}`)}
             >
               <TallyBox state="empty" color={colors.red} />
-              <View style={styles.alertTextGroup}>
+              <View style={styles.alertTextGroup} importantForAccessibility="no-hide-descendants">
                 <Text style={styles.alertTitle}>{item.title}</Text>
                 <Text style={[styles.alertSubtitle, { color: colors.red }]}>{item.subtitle}</Text>
               </View>
@@ -105,14 +137,17 @@ export default function HomeScreen() {
         <View style={styles.actionsSection}>
           <Text style={styles.sectionTitle}>Quick actions</Text>
           <View style={styles.actionsRow}>
-            {quickActions.map(({ label, Icon, rotate }) => (
-              <View
+            {quickActions.map(({ label, Icon, rotate, onPress }) => (
+              <Pressable
                 key={label}
                 style={[styles.actionTag, { transform: [{ rotate: `${rotate}deg` }] }]}
+                accessibilityRole="button"
+                accessibilityLabel={label}
+                onPress={onPress}
               >
                 <Icon color={colors.ink} size={14} />
                 <Text style={styles.actionLabel}>{label}</Text>
-              </View>
+              </Pressable>
             ))}
           </View>
         </View>

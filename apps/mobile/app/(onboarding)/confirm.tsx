@@ -28,12 +28,18 @@ function YesNoRow({
       <View style={styles.followUpButtons}>
         <Pressable
           style={[styles.pillButton, value === true && styles.pillButtonActive]}
+          accessibilityRole="button"
+          accessibilityLabel={`${question}: Yes`}
+          accessibilityState={{ selected: value === true }}
           onPress={() => onChange(true)}
         >
           <Text style={[styles.pillLabel, value === true && styles.pillLabelActive]}>Yes</Text>
         </Pressable>
         <Pressable
           style={[styles.pillButton, value === false && styles.pillButtonActive]}
+          accessibilityRole="button"
+          accessibilityLabel={`${question}: No`}
+          accessibilityState={{ selected: value === false }}
           onPress={() => onChange(false)}
         >
           <Text style={[styles.pillLabel, value === false && styles.pillLabelActive]}>No</Text>
@@ -68,6 +74,9 @@ export default function ConfirmScreen() {
             <Pressable
               key={f.key}
               style={styles.factRow}
+              accessibilityRole="checkbox"
+              accessibilityLabel={`${f.label}: ${f.value}`}
+              accessibilityState={{ checked: f.confirmed }}
               onPress={() => toggleFactConfirmed(f.key)}
             >
               <TallyBox state={f.confirmed ? "checked" : "empty"} color={colors.ink} />
@@ -95,6 +104,9 @@ export default function ConfirmScreen() {
       <View style={styles.footer}>
         <Pressable
           style={[styles.primaryButton, !canContinue && styles.disabledButton]}
+          accessibilityRole="button"
+          accessibilityLabel="Continue"
+          accessibilityState={{ disabled: !canContinue }}
           onPress={() => router.push("/(onboarding)/summary")}
           disabled={!canContinue}
         >
@@ -182,7 +194,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   pillButton: {
-    minHeight: 40,
+    minHeight: 44,
     paddingHorizontal: 20,
     alignItems: "center",
     justifyContent: "center",

@@ -48,6 +48,7 @@ export default function DescribeScreen() {
             onChangeText={setText}
             placeholder={EXAMPLE}
             placeholderTextColor={colors.inkFaint}
+            accessibilityLabel="Describe your business"
             multiline
             style={styles.textarea}
             textAlignVertical="top"
@@ -57,6 +58,9 @@ export default function DescribeScreen() {
         <View style={styles.footer}>
           <Pressable
             style={[styles.primaryButton, !canContinue && styles.disabledButton]}
+            accessibilityRole="button"
+            accessibilityLabel="Continue"
+            accessibilityState={{ disabled: !canContinue }}
             onPress={onContinue}
             disabled={!canContinue}
           >

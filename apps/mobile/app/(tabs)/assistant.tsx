@@ -113,9 +113,16 @@ export default function AssistantScreen() {
             onChangeText={setDraft}
             placeholder="Ask about a requirement..."
             placeholderTextColor={colors.inkFaint}
+            accessibilityLabel="Ask about a requirement"
             style={styles.input}
           />
-          <Pressable testID="assistant-ask" style={styles.sendButton} onPress={onAsk}>
+          <Pressable
+            testID="assistant-ask"
+            style={styles.sendButton}
+            accessibilityRole="button"
+            accessibilityLabel="Ask"
+            onPress={onAsk}
+          >
             <Text style={styles.sendLabel}>Ask</Text>
           </Pressable>
         </View>

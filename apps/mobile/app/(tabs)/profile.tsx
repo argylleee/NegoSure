@@ -33,11 +33,19 @@ export default function ProfileScreen() {
           <Text style={styles.metaText}>{business.location}</Text>
         </View>
 
+        {/* These rows have no destination screens yet — the chevron implies
+            navigation that doesn't exist. Accessible for now; build the
+            actual settings screens before this ships. */}
         {settingsGroups.map((group) => (
           <View key={group.title} style={styles.group}>
             <Text style={styles.groupTitle}>{group.title}</Text>
             {group.items.map((item) => (
-              <Pressable key={item} style={styles.row}>
+              <Pressable
+                key={item}
+                style={styles.row}
+                accessibilityRole="button"
+                accessibilityLabel={item}
+              >
                 <Text style={styles.rowLabel}>{item}</Text>
                 <Text style={styles.chevron}>›</Text>
               </Pressable>
@@ -47,6 +55,8 @@ export default function ProfileScreen() {
 
         <Pressable
           style={styles.signOut}
+          accessibilityRole="button"
+          accessibilityLabel="Sign out"
           onPress={() => {
             signOut();
             router.replace("/(auth)/welcome");

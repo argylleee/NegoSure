@@ -70,7 +70,11 @@ export default function DocumentsScreen() {
           <View style={styles.ruleStrong} />
         </View>
 
-        <Pressable style={styles.uploadTag}>
+        <Pressable
+          style={styles.uploadTag}
+          accessibilityRole="button"
+          accessibilityLabel="Scan or upload a document"
+        >
           <ScanIcon color={colors.ink} size={14} />
           <Text style={styles.uploadLabel}>Scan or upload a document</Text>
         </Pressable>
@@ -78,7 +82,12 @@ export default function DocumentsScreen() {
 
       <ScrollView contentContainerStyle={styles.list}>
         {documents.map((d) => (
-          <View key={d.name} style={styles.row}>
+          <View
+            key={d.name}
+            style={styles.row}
+            accessible
+            accessibilityLabel={`${d.name}, ${d.category}, ${STATUS_LABEL[d.status]}, ${d.meta}`}
+          >
             <View style={styles.rowTop}>
               <DocumentsIcon color={colors.inkSoft} size={18} />
               <View style={styles.textGroup}>

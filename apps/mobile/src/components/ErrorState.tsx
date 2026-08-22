@@ -17,11 +17,16 @@ export function ErrorState({
   onRetry,
 }: ErrorStateProps) {
   return (
-    <View testID="error-state" style={styles.container}>
+    <View testID="error-state" style={styles.container} accessibilityRole="alert">
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
       {onRetry ? (
-        <Pressable style={styles.retry} onPress={onRetry}>
+        <Pressable
+          style={styles.retry}
+          accessibilityRole="button"
+          accessibilityLabel="Try again"
+          onPress={onRetry}
+        >
           <Text style={styles.retryLabel}>Try again</Text>
         </Pressable>
       ) : null}

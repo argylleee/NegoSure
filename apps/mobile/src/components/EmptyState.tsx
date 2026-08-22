@@ -18,7 +18,12 @@ export function EmptyState({ title, description, actionLabel, onAction }: EmptyS
       <Text style={styles.title}>{title}</Text>
       {description ? <Text style={styles.description}>{description}</Text> : null}
       {actionLabel && onAction ? (
-        <Pressable style={styles.action} onPress={onAction}>
+        <Pressable
+          style={styles.action}
+          accessibilityRole="button"
+          accessibilityLabel={actionLabel}
+          onPress={onAction}
+        >
           <Text style={styles.actionLabel}>{actionLabel}</Text>
         </Pressable>
       ) : null}

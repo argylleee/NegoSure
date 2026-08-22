@@ -65,6 +65,9 @@ export default function RequirementsScreen() {
               <Pressable
                 key={f.key}
                 onPress={() => setActiveFilter(f.key)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+                accessibilityLabel={`Filter: ${f.label}`}
                 style={[
                   styles.filterItem,
                   { borderBottomColor: active ? colors.ink : "transparent" },
@@ -89,16 +92,18 @@ export default function RequirementsScreen() {
               <Pressable
                 key={r.id}
                 style={styles.row}
+                accessibilityRole="button"
+                accessibilityLabel={`${r.title}, ${s.label}, source ${r.source}${r.govService.available ? ", eLGU synced" : ""}`}
                 onPress={() => router.push(`/requirements/${r.id}`)}
               >
-                <View style={styles.rowTop}>
+                <View style={styles.rowTop} importantForAccessibility="no-hide-descendants">
                   <TallyBox state={s.box} color={s.color} />
                   <View style={styles.textGroup}>
                     <Text style={styles.reqTitle}>{r.title}</Text>
                     <Text style={styles.reqReason}>{r.reason}</Text>
                   </View>
                 </View>
-                <View style={styles.rowBottom}>
+                <View style={styles.rowBottom} importantForAccessibility="no-hide-descendants">
                   <View style={styles.rowBaseline}>
                     <Text style={[styles.statusLabel, { color: s.color }]}>{s.label}</Text>
                     <Text style={styles.faintText}>{r.source}</Text>
